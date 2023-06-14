@@ -1,8 +1,15 @@
 package tools.redstone.redstonetools.features;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.server.command.ServerCommandSource;
+
+//#if MC>=11900
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.server.command.CommandManager;
+//#else
+//$$ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+//#endif
 
 public abstract class AbstractFeature {
     private final Feature feature;
@@ -34,5 +41,9 @@ public abstract class AbstractFeature {
         CommandRegistrationCallback.EVENT.register(this::registerCommands);
     }
 
-    protected abstract void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated);
+    //#if MC>=11900
+    protected abstract void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment);
+    //#else
+    //$$ protected abstract void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated);
+    //#endif
 }

@@ -3,12 +3,17 @@ package tools.redstone.redstonetools.macros.gui.screen;
 import tools.redstone.redstonetools.macros.gui.widget.macrolist.MacroEntry;
 import tools.redstone.redstonetools.macros.gui.widget.macrolist.MacroListWidget;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+
+//#if MC>=11900
+import net.minecraft.screen.ScreenTexts;
+//#else
+//$$ import net.minecraft.client.gui.screen.ScreenTexts;
+//#endif
 
 public class MacroSelectScreen extends GameOptionsScreen {
 
@@ -23,11 +28,11 @@ public class MacroSelectScreen extends GameOptionsScreen {
     public void init() {
         super.init();
 
-        this.macroList = new MacroListWidget(this,client);
+        this.macroList = new MacroListWidget(this, client);
         this.addSelectableChild(this.macroList);
 
         this.addDrawableChild(new ButtonWidget(this.width / 2 +1, this.height - 29, 150, 20, Text.of("Create New..."), (button) -> {
-            this.client.setScreen(new MacroEditScreen(this,gameOptions,Text.of("New Macro"), macroList));
+            this.client.setScreen(new MacroEditScreen(this, gameOptions, Text.of("New Macro"), macroList));
         }));
 
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 151, this.height - 29, 150, 20, ScreenTexts.DONE, (button) -> {
@@ -46,7 +51,7 @@ public class MacroSelectScreen extends GameOptionsScreen {
     }
 
     public void openEditScreen(MacroEntry entry) {
-        client.setScreen(new MacroEditScreen(this,gameOptions,Text.of("Edit Macro"), macroList, entry.macro));
+        client.setScreen(new MacroEditScreen(this, gameOptions, Text.of("Edit Macro"), macroList, entry.macro));
     }
 
 }

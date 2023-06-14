@@ -16,56 +16,55 @@ import tools.redstone.redstonetools.macros.gui.MaroCommandSuggestor;
 
 import java.util.concurrent.CompletableFuture;
 
-
 @Mixin(CommandSuggestor.class)
-public class CommandSuggestorMixin{
+public abstract class CommandSuggestorMixin {
 
     @Shadow @Final
     TextFieldWidget textField;
-    @Shadow private @Nullable CompletableFuture<Suggestions> pendingSuggestions;
+
+    @Shadow @Nullable
+    private CompletableFuture<Suggestions> pendingSuggestions;
+
     @Shadow @Final
     int maxSuggestionSize;
 
+    private int i = 0;
 
     @ModifyVariable(method = "showSuggestions", at = @At("STORE"), ordinal = 1)
-    public int suggestionWindXPos(int j){
-        if (MaroCommandSuggestor.instance(this)) {
-            Suggestions suggestions = this.pendingSuggestions.join();
-            return this.textField.getCharacterX(suggestions.getRange().getStart())+4;
+    public int suggestionWindXPos(int j) {
+        if (!MaroCommandSuggestor.instance(this)) {
+            return j;
         }
-        return j;
+
+        Suggestions suggestions = this.pendingSuggestions.join();
+        return this.textField.getCharacterX(suggestions.getRange().getStart()) + 4;
     }
 
     @ModifyVariable(method = "showSuggestions", at = @At("STORE"), ordinal = 2)
-    public int suggestionWindYPos(int k){
-        if (MaroCommandSuggestor.instance(this)) {
-            Suggestions suggestions = this.pendingSuggestions.join();
-
-            int y = MaroCommandSuggestor.getY(this)-2;
-            return y +20 - Math.min(suggestions.getList().size(), this.maxSuggestionSize) * 12;
+    public int suggestionWindYPos(int k) {
+        if (!MaroCommandSuggestor.instance(this)) {
+            return k;
         }
-        return k;
+
+        Suggestions suggestions = this.pendingSuggestions.join();
+
+        int y = MaroCommandSuggestor.getY(this) - 2;
+        return y + 20 - Math.min(suggestions.getList().size(), this.maxSuggestionSize) * 12;
     }
 
-
-    private int i = 0;
-
     @Inject(method = "render", at = @At("HEAD"))
-    public void render(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci){
+    public void render(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
         i = 0;
     }
 
     @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 3)
     public int messageYPos(int j) {
-        if (MaroCommandSuggestor.instance(this)) {
-            int y = MaroCommandSuggestor.getY(this);
-            i++;
-            return y - 12*(i-1)+43;
+        if (!MaroCommandSuggestor.instance(this)) {
+            return j;
         }
-        return j;
+
+        int y = MaroCommandSuggestor.getY(this);
+        i++;
+        return y - 12 * (i - 1) + 43;
     }
-
-
-
-
 }

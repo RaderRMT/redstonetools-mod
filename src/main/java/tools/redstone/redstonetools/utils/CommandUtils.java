@@ -1,5 +1,6 @@
 package tools.redstone.redstonetools.utils;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import tools.redstone.redstonetools.features.arguments.Argument;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -12,10 +13,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class CommandUtils {
-    private CommandUtils() { }
 
-    public static void register(String name, List<Argument<?>> arguments, Command<ServerCommandSource> executor, CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
-        var base = CommandManager.literal(name);
+    private CommandUtils() {
+    }
+
+    //#if MC>=11900
+    public static void register(String name, List<Argument<?>> arguments, Command<ServerCommandSource> executor, CommandDispatcher<ServerCommandSource> dispatcher) {
+        //#else
+        //$$ public static void register(String name, List<Argument<?>> arguments, Command<ServerCommandSource> executor, CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+        //#endif
+        LiteralArgumentBuilder<ServerCommandSource> base = CommandManager.literal(name);
 
         if (arguments.stream().allMatch(Argument::isOptional)) {
             base.executes(executor);
@@ -31,11 +38,11 @@ public class CommandUtils {
     }
 
     private static ArgumentBuilder<ServerCommandSource, ?> createArgumentChain(List<Argument<?>> arguments, Command<ServerCommandSource> executor) {
-        var reversedArguments = new ArrayList<>(arguments);
+        List<Argument<?>> reversedArguments = new ArrayList<>(arguments);
         Collections.reverse(reversedArguments);
 
         ArgumentBuilder<ServerCommandSource, ?> argument = null;
-        for (var arg : reversedArguments) {
+        for (Argument<?> arg : reversedArguments) {
             if (argument == null) {
                 argument = CommandManager.argument(arg.getName(), arg.getType()).executes(executor);
             } else {

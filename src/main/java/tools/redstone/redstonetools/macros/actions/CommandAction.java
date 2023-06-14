@@ -1,8 +1,10 @@
 package tools.redstone.redstonetools.macros.actions;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 
 public class CommandAction extends Action {
+
     public String command;
 
     public CommandAction(String command) {
@@ -11,10 +13,14 @@ public class CommandAction extends Action {
 
     @Override
     public void run() {
-        var player = MinecraftClient.getInstance().player;
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
         assert player != null;
 
-        player.sendChatMessage(command.startsWith("/") ? command : "/" + command);
+        //#if MC>=11900
+        player.sendCommand(command.startsWith("/") ? command.substring(1) : command);
+        //#else
+        //$$ player.sendChatMessage(command.startsWith("/") ? command : "/" + command);
+        //#endif
     }
 
     @Override
@@ -25,5 +31,4 @@ public class CommandAction extends Action {
 
         return super.equals(obj);
     }
-
 }

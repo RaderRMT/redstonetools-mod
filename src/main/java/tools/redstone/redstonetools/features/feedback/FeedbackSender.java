@@ -1,7 +1,12 @@
 package tools.redstone.redstonetools.features.feedback;
 
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+
+//#if MC>=11900
+import net.minecraft.text.Text;
+//#else
+//$$ import net.minecraft.text.LiteralText;
+//#endif
 
 import javax.inject.Singleton;
 
@@ -13,7 +18,11 @@ public class FeedbackSender extends AbstractFeedbackSender {
             return;
         }
 
-        source.sendFeedback(new LiteralText(feedback.getMessage())
+        //#if MC>=11900
+        source.sendFeedback(Text.literal(feedback.getMessage())
+                //#else
+                //$$ source.sendFeedback(new LiteralText(feedback.getMessage())
+                //#endif
                 .formatted(feedback.getFormatting()), false);
     }
 }
