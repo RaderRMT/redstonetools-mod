@@ -7,11 +7,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+
+//#if MC>=11900
+import net.minecraft.text.Text;
+//#else
+//$$ import net.minecraft.text.LiteralText;
+//#endif
 
 @FunctionalInterface
 public interface SignalBlockSupplier {
@@ -123,9 +128,12 @@ public interface SignalBlockSupplier {
     }
 
     private static void setItemName(ItemStack item, int signalStrength) {
-        MutableText text = new LiteralText(String.valueOf(signalStrength));
+        //#if MC>=11900
+        MutableText text = Text.literal(String.valueOf(signalStrength));
+        //#else
+        //$$ MutableText text = new LiteralText(String.valueOf(signalStrength));
+        //#endif
         text.setStyle(text.getStyle().withColor(Formatting.RED));
         item.setCustomName(text);
     }
-
 }

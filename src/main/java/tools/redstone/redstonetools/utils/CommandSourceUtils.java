@@ -7,6 +7,6 @@ public class CommandSourceUtils {
     }
 
     public static void executeCommand(ServerCommandSource source, String command) {
-        source.getServer().getCommandManager().execute(source, command);
+//        source.getServer().getCommandManager().execute(source, command);
     }
 }

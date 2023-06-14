@@ -8,6 +8,10 @@ import rip.hippo.inject.Doctor;
 import rip.hippo.inject.Injector;
 import tools.redstone.redstonetools.utils.ReflectionUtils;
 
+//#if MC>=11900
+import tools.redstone.redstonetools.features.arguments.ArgumentTypeSerializers;
+//#endif
+
 public class RedstoneToolsClient implements ClientModInitializer {
     public static final String MOD_ID = "redstonetools";
     public static final String MOD_VERSION = "v" + FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow().getMetadata().getVersion().getFriendlyString();
@@ -20,6 +24,11 @@ public class RedstoneToolsClient implements ClientModInitializer {
 
         // Register game rules
         RedstoneToolsGameRules.register();
+
+        // Register argument type serializers
+        //#if MC>=11900
+        ArgumentTypeSerializers.register();
+        //#endif
 
         // Register features
         ReflectionUtils.getFeatures().forEach(feature -> {

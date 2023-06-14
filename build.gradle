@@ -1,10 +1,23 @@
+import com.replaymod.gradle.preprocess.PreprocessTask
+
 //file:noinspection GroovyAssignabilityCheck
 
+buildscript {
+	def (major, minor, patch) = project.name.split("-")[0].tokenize('.')
+	project.ext.mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
+
+	dependencies {
+		classpath 'fabric-loom:fabric-loom.gradle.plugin:0.11-SNAPSHOT'
+	}
+}
+
 plugins {
-	id 'fabric-loom' version '1.2-SNAPSHOT'
 	id 'maven-publish'
 	id 'com.github.johnrengelman.shadow' version '8.+'
 }
+
+apply plugin: 'fabric-loom'
+apply plugin: 'com.replaymod.preprocess'
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
@@ -12,6 +25,24 @@ targetCompatibility = JavaVersion.VERSION_17
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
+
+def mappingsVersions = [
+		11802: "1.18.2+build.4",
+		11900: "1.19+build.4",
+		11901: "1.19.1+build.6",
+]
+
+def fabricApiVersions = [
+		11802: "0.53.4+1.18.2",
+		11900: "0.55.0+1.19",
+		11901: "0.58.5+1.19.1",
+]
+
+def worldEditApiVersions = [
+		11802: "1.18.2:7.2.10",
+		11900: "1.19:7.2.11-beta-01",
+		11901: "1.19.1:7.2.11",
+]
 
 repositories {
 	// Add repositories to retrieve artifacts from in here.
@@ -42,22 +73,67 @@ dependencies {
 	annotationProcessor implementation("com.google.auto.service:auto-service:1.1.0")
 
 	// To change the versions see the gradle.properties file
-	minecraft("com.mojang:minecraft:${project.minecraft_version}")
-	mappings("net.fabricmc:yarn:${project.yarn_mappings}:v2")
+	minecraft("com.mojang:minecraft:${project.name}")
+
+	mappings "net.fabricmc:yarn:${mappingsVersions[mcVersion]}:v2"
+
 	modImplementation("net.fabricmc:fabric-loader:${project.loader_version}")
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersions[mcVersion]}")
 
 	// Worldedit API
-	modImplementation("com.sk89q.worldedit:worldedit-fabric-mc1.18.2:7.2.10")
+	modImplementation("com.sk89q.worldedit:worldedit-fabric-mc${worldEditApiVersions[mcVersion]}")
+
+	modRuntimeOnly('me.djtheredstoner:DevAuth-fabric:1.1.0')
 }
 
 processResources {
-	inputs.property "version", project.version
+	inputs.property("version", project.name + "-" + project.version)
+	inputs.property("mcVersion", project.name)
+	inputs.property("worldEditVersion", worldEditApiVersions[mcVersion].split(":")[1])
 
 	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+		expand "version": project.name + "-" + project.version,
+		"mcVersion": project.name,
+		"worldEditVersion": worldEditApiVersions[mcVersion].split(":")[1]
+	}
+}
+
+if (mcVersion >= 11900) {
+	loom.accessWidenerPath = rootProject.file("src/main/resources/redstonetools.accesswidener")
+}
+
+loom {
+	runs {
+		client {
+			property('devauth.enabled', 'true')
+
+			ideConfigGenerated = true
+		}
+	}
+}
+
+if (project.name == '1.19.1') {
+	tasks.register('generateJava', Copy) {
+		from "${project.parent.projectDir}/src/template/java"
+		into "${project.parent.buildDir}/generated/java"
+	}
+
+	sourceSets.main.java.srcDir "${project.parent.buildDir}/generated/java"
+	compileJava.dependsOn(generateJava)
+}
+
+// hack to add natives library path to intellij run config
+// `MinecraftProvider` is not yet available yet during the `loom` configuration block above
+// so we set it right before the `ideaSyncTask` task
+tasks.ideaSyncTask.doFirst {
+	def nativesPath = extension.getFiles().getNativesDirectory(project).getAbsolutePath()
+
+	loom.runConfigs.configureEach { config ->
+		if (config.name == "client") {
+			config.property("java.library.path", nativesPath)
+		}
 	}
 }
 
@@ -68,6 +144,15 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
+}
+
+preprocess {
+	vars.put("MC", project.mcVersion)
+
+	keywords.set([
+			".java": PreprocessTask.DEFAULT_KEYWORDS,
+			".json": PreprocessTask.DEFAULT_KEYWORDS,
+	])
 }
 
 shadowJar {

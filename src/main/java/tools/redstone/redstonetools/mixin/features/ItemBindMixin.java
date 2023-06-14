@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -24,7 +25,6 @@ import tools.redstone.redstonetools.features.feedback.Feedback;
 import tools.redstone.redstonetools.features.feedback.FeedbackSender;
 
 import static tools.redstone.redstonetools.RedstoneToolsClient.INJECTOR;
-
 
 public abstract class ItemBindMixin {
 
@@ -53,7 +53,12 @@ public abstract class ItemBindMixin {
             NbtCompound nbt = getNbt();
             if (nbt == null || !nbt.contains("command")) return false;
             NbtString command = (NbtString) nbt.get("command");
-            MinecraftClient.getInstance().player.sendChatMessage(command.asString());
+
+            //#if MC>=11900
+            MinecraftClient.getInstance().player.sendCommand(command.asString());
+            //#else
+            //$$ MinecraftClient.getInstance().player.sendChatMessage(command.asString());
+            //#endif
 
             return true;
         }
@@ -62,17 +67,23 @@ public abstract class ItemBindMixin {
     @Mixin(ClientPlayerEntity.class)
     private abstract static class PlayerMixin {
 
-        @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
-        public void injectCommand(String message, CallbackInfo ci) {
-            if (!message.startsWith("/") || !ItemBindFeature.waitingForCommand) return;
+        //#if MC>=11900
+        @Inject(method = "sendCommand(Ljava/lang/String;)Z", at = @At("HEAD"), cancellable = true)
+        public void injectCommand(String message, CallbackInfoReturnable<Boolean> cir) {
+            if (!ItemBindFeature.waitingForCommand) {
+        //#else
+        //$$ @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
+        //$$ public void injectCommand(String message, CallbackInfo cir) {
+        //$$     if (!message.startsWith("/") || !ItemBindFeature.waitingForCommand) {
+        //#endif
+                return;
+            }
 
             Feedback addCommandFeedback = ItemBindFeature.addCommand(message);
             if (addCommandFeedback != null) {
-                INJECTOR.getInstance(FeedbackSender.class).sendFeedback(((Entity) ((Object)this)).getCommandSource(),addCommandFeedback);
-                ci.cancel();
+                INJECTOR.getInstance(FeedbackSender.class).sendFeedback(((Entity) ((Object) this)).getCommandSource(), addCommandFeedback);
+                cir.cancel();
             }
         }
     }
-
-
 }

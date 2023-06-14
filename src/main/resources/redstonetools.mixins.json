@@ -12,7 +12,7 @@
     "features.AutoDustMixin",
     "features.CopyStateMixin",
     "features.ItemBindMixin$ItemStackMixin",
-    "gamerules.DoContainerDropsMixin",
+    "gamerules.DoContainerDropsMixin"
   ],
   "client": [
     "accessors.MinecraftClientAccessor",
@@ -22,7 +22,12 @@
     "macros.InitializeMacroManagerMixin",
     "macros.KeyBindingMixinImpl",
     "macros.autocomplete.ClientPlayerEntityMixinImpl",
-    "macros.autocomplete.CommandSuggestorMixin",
-    "update.CheckUpdateMixin"
+    "update.CheckUpdateMixin",
+
+    //#if MC>=11901
+    "macros.autocomplete.ChatInputSuggestorMixin"
+    //#else
+    //$$ "macros.autocomplete.CommandSuggestorMixin"
+    //#endif
   ]
 }

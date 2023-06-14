@@ -1,8 +1,6 @@
 package tools.redstone.redstonetools.macros.gui.screen;
 
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.util.math.MathHelper;
 import tools.redstone.redstonetools.macros.Macro;
 import tools.redstone.redstonetools.macros.MacroManager;
 import tools.redstone.redstonetools.macros.actions.Action;
@@ -12,7 +10,6 @@ import tools.redstone.redstonetools.macros.gui.widget.commandlist.CommandListWid
 import tools.redstone.redstonetools.macros.gui.widget.macrolist.MacroListWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -21,15 +18,20 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.InputUtil.Key;
 import net.minecraft.client.util.InputUtil.Type;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import tools.redstone.redstonetools.utils.KeyBindingUtils;
 
 import java.util.List;
 
-import static tools.redstone.redstonetools.RedstoneToolsClient.INJECTOR;
+//#if MC>=11900
+import net.minecraft.screen.ScreenTexts;
+//#else
+//$$ import net.minecraft.client.gui.screen.ScreenTexts;
+//$$ import net.minecraft.text.LiteralText;
+//#endif
 
+import static tools.redstone.redstonetools.RedstoneToolsClient.INJECTOR;
 
 public class MacroEditScreen extends GameOptionsScreen {
 
@@ -66,12 +68,17 @@ public class MacroEditScreen extends GameOptionsScreen {
 
         doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, Text.of("Done"), (button) -> {
             String name = nameField.getText().trim();
-            if (name.isEmpty()) return;
+            if (name.isEmpty()) {
+                return;
+            }
 
             updateMacroActions();
 
-            if (!macro.isCopy()) macroListWidget.addMacro(macro);
-            else macro.applyChangesToOriginal();
+            if (!macro.isCopy()) {
+                macroListWidget.addMacro(macro);
+            } else {
+                macro.applyChangesToOriginal();
+            }
 
             INJECTOR.getInstance(MacroManager.class).saveChanges();
 
@@ -85,21 +92,36 @@ public class MacroEditScreen extends GameOptionsScreen {
         });
         addSelectableChild(nameField);
 
-
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, (button) -> {
             close();
         }));
 
         Key keyCode = macro.getKey();
         Text text = keyCode.getLocalizedText();
-        if (keyCode == InputUtil.UNKNOWN_KEY) text = Text.of("");
-        if ( KeyBindingUtils.isKeyAlreadyBound(keyCode) ) { text = new LiteralText(text.getString()).formatted(Formatting.RED); }
+        if (keyCode == InputUtil.UNKNOWN_KEY) {
+            text = Text.of("");
+        }
+
+        if (KeyBindingUtils.isKeyAlreadyBound(keyCode)) {
+            //#if MC>=11900
+            text = Text.literal(text.getString()).formatted(Formatting.RED);
+            //#else
+            //$$ text = new LiteralText(text.getString()).formatted(Formatting.RED);
+            //#endif
+        }
 
         keyBindButton = new ButtonWidget(this.width / 2 + 26, 55, 75, 20, text, (button) -> {
             detectingKeycodeKey = true;
-            keyBindButton.setMessage((new LiteralText("> ")).append(keyBindButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
+            //#if MC>=11900
+            keyBindButton.setMessage(Text.literal("> ").append(keyBindButton.getMessage().copy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
+            //#else
+            //$$ keyBindButton.setMessage(new LiteralText("> ").append(keyBindButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
+            //#endif
         });
-        if (detectingKeycodeKey) keyBindButton.onPress();
+
+        if (detectingKeycodeKey) {
+            keyBindButton.onPress();
+        }
 
         this.addDrawableChild(keyBindButton);
 
@@ -113,7 +135,6 @@ public class MacroEditScreen extends GameOptionsScreen {
 
         commandList = new CommandListWidget(client, this, widgetWidth, height, 85, this.height / 4 + 144 + 5 - 10, 24);
         commandList.setLeftPos(width / 2 - widgetWidth / 2);
-
 
         if (entries != null) {
             commandList.children().clear();
@@ -171,7 +192,9 @@ public class MacroEditScreen extends GameOptionsScreen {
     @Override
     public void resize(MinecraftClient client, int width, int height) {
         super.resize(client, width, height);
-        if (overlapped) client.setScreen(new CommandEditScreen(this,gameOptions,commandList.getFocused().command));
+        if (overlapped) {
+            client.setScreen(new CommandEditScreen(this, gameOptions, commandList.getFocused().command));
+        }
     }
 
 
@@ -185,8 +208,11 @@ public class MacroEditScreen extends GameOptionsScreen {
         updateMacroActions();
         if (macro.needsSaving()) {
             client.setScreen(new ConfirmScreen(accept -> {
-                if (accept) client.setScreen(parent);
-                else client.setScreen(this);
+                if (accept) {
+                    client.setScreen(parent);
+                } else {
+                    client.setScreen(this);
+                }
             }, Text.of("Unsaved changes"), Text.of("Are you sure you want to discard changes?")));
         } else {
             super.close();
@@ -202,59 +228,84 @@ public class MacroEditScreen extends GameOptionsScreen {
     }
 
     public void editCommandField(TextFieldWidget commandField) {
-        client.setScreen(new CommandEditScreen(this,gameOptions, commandField));
+        client.setScreen(new CommandEditScreen(this, gameOptions, commandField));
         overlapped = true;
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         Key key = InputUtil.fromKeyCode(keyCode, scanCode);
-        if (keyCode == InputUtil.GLFW_KEY_ESCAPE) key = InputUtil.UNKNOWN_KEY;
+        if (keyCode == InputUtil.GLFW_KEY_ESCAPE) {
+            key = InputUtil.UNKNOWN_KEY;
+        }
 
-        if (updateKeybinding(key)) return false;
-        if (commandList.keyPressed(keyCode, scanCode, modifiers)) return false;
-        if (keyCode == InputUtil.GLFW_KEY_TAB || keyCode == InputUtil.GLFW_KEY_SPACE) return false;
+        if (updateKeybinding(key)) {
+            return false;
+        }
+
+        if (commandList.keyPressed(keyCode, scanCode, modifiers)) {
+            return false;
+        }
+
+        if (keyCode == InputUtil.GLFW_KEY_TAB || keyCode == InputUtil.GLFW_KEY_SPACE) {
+            return false;
+        }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (commandList.keyReleased(keyCode, scanCode, modifiers)) return false;
+        if (commandList.keyReleased(keyCode, scanCode, modifiers)) {
+            return false;
+        }
 
         return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char chr, int modifiers) {
-        if (commandList.charTyped(chr, modifiers)) return false;
+        if (commandList.charTyped(chr, modifiers)) {
+            return false;
+        }
 
         return super.charTyped(chr, modifiers);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!commandList.isMouseOver(mouseX, mouseY)) commandList.mouseClicked(mouseX, mouseY, button);
-        if (updateKeybinding(Type.MOUSE.createFromCode(button))) return false;
+        if (!commandList.isMouseOver(mouseX, mouseY)) {
+            commandList.mouseClicked(mouseX, mouseY, button);
+        }
 
+        if (updateKeybinding(Type.MOUSE.createFromCode(button))) {
+            return false;
+        }
 
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private boolean updateKeybinding(Key key) {
-        if (detectingKeycodeKey) {
-            detectingKeycodeKey = false;
-            Text text = key.getLocalizedText();
-            if (key == InputUtil.UNKNOWN_KEY) text = Text.of("");
-            if ( KeyBindingUtils.isKeyAlreadyBound(key) ) { text = new LiteralText(text.getString()).formatted(Formatting.RED); }
-
-            keyBindButton.setMessage(text);
-            macro.setKey(key);
-            return true;
+        if (!detectingKeycodeKey) {
+            return false;
         }
 
-        return false;
+        detectingKeycodeKey = false;
+        Text text = key.getLocalizedText();
+        if (key == InputUtil.UNKNOWN_KEY) {
+            text = Text.of("");
+        }
+
+        if (KeyBindingUtils.isKeyAlreadyBound(key)) {
+            //#if MC>=11900
+            text = Text.literal(text.getString()).formatted(Formatting.RED);
+            //#else
+            //$$ text = new LiteralText(text.getString()).formatted(Formatting.RED);
+            //#endif
+        }
+
+        keyBindButton.setMessage(text);
+        macro.setKey(key);
+        return true;
     }
-
-
 }

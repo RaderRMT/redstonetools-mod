@@ -10,16 +10,25 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.server.command.ServerCommandSource;
 
+//#if MC>=11900
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.server.command.CommandManager;
+//#endif
 
 import static tools.redstone.redstonetools.RedstoneToolsClient.INJECTOR;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public abstract class ToggleableFeature extends AbstractFeature {
+
     private boolean enabled;
     private Feature info;
 
     @Override
-    protected void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+    //#if MC>=11900
+    protected void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+        //#else
+        //$$ protected void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+        //#endif
         info = ReflectionUtils.getFeatureInfo(getClass());
 
         dispatcher.register(literal(info.command())
@@ -58,5 +67,4 @@ public abstract class ToggleableFeature extends AbstractFeature {
     public int disable(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         return disable(context.getSource());
     }
-
 }
