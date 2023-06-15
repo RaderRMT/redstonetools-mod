@@ -23,7 +23,7 @@ import static tools.redstone.redstonetools.RedstoneToolsClient.LOGGER;
 import static tools.redstone.redstonetools.RedstoneToolsClient.MOD_VERSION;
 
 @Mixin(TitleScreen.class)
-public class CheckUpdateMixin extends Screen {
+public abstract class CheckUpdateMixin extends Screen {
     public boolean updateChecked = false;
 
     public CheckUpdateMixin(Text title) {

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import tools.redstone.redstonetools.macros.ClientPlayerEntityMixin;
 
 @Mixin(ClientPlayerEntity.class)
-public class ClientPlayerEntityMixinImpl implements ClientPlayerEntityMixin {
+public abstract class ClientPlayerEntityMixinImpl implements ClientPlayerEntityMixin {
 
     @Mutable
     @Shadow @Final public ClientPlayNetworkHandler networkHandler;

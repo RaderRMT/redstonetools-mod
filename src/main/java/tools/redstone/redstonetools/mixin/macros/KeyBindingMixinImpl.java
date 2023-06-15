@@ -10,7 +10,7 @@ import tools.redstone.redstonetools.macros.KeyBindingMixin;
 import java.util.Map;
 
 @Mixin(KeyBinding.class)
-public class KeyBindingMixinImpl implements KeyBindingMixin {
+public abstract class KeyBindingMixinImpl implements KeyBindingMixin {
 
     @Shadow @Final private static Map<String, KeyBinding> KEYS_BY_ID;
 

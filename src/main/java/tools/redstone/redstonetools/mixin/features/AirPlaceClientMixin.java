@@ -20,7 +20,7 @@ import tools.redstone.redstonetools.features.commands.AirPlaceReachFeature;
 import tools.redstone.redstonetools.features.toggleable.AirPlaceFeature;
 
 @Mixin(MinecraftClient.class)
-public class AirPlaceClientMixin {
+public abstract class AirPlaceClientMixin {
     private final AirPlaceFeature airPlaceFeature = RedstoneToolsClient.INJECTOR.getInstance(AirPlaceFeature.class);
     private final AirPlaceReachFeature airPlaceReachFeature = RedstoneToolsClient.INJECTOR.getInstance(AirPlaceReachFeature.class);
 

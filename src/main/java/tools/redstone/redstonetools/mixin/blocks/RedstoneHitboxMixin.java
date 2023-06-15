@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Pseudo
 @Mixin(RedstoneWireBlock.class)
-public class RedstoneHitboxMixin {
+public abstract class RedstoneHitboxMixin {
 
     private static final Map<Integer, VoxelShape> SHAPES = new HashMap<>();
 

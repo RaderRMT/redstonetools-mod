@@ -10,7 +10,7 @@ import tools.redstone.redstonetools.RedstoneToolsClient;
 import tools.redstone.redstonetools.macros.MacroManager;
 
 @Mixin(MinecraftClient.class)
-public class InitializeMacroManagerMixin {
+public abstract class InitializeMacroManagerMixin {
     @Inject(method = "<init>", at = @At("TAIL"))
     public void registerMacros(RunArgs args, CallbackInfo ci){
         RedstoneToolsClient.INJECTOR.getInstance(MacroManager.class);// should register macro keybinds

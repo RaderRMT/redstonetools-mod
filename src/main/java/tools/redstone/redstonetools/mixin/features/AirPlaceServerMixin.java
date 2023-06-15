@@ -9,7 +9,7 @@ import tools.redstone.redstonetools.features.commands.AirPlaceReachFeature;
 import tools.redstone.redstonetools.features.toggleable.AirPlaceFeature;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public class AirPlaceServerMixin {
+public abstract class AirPlaceServerMixin {
 
     private final AirPlaceFeature airPlaceFeature = RedstoneToolsClient.INJECTOR.getInstance(AirPlaceFeature.class);
     private final AirPlaceReachFeature airPlaceReachFeature = RedstoneToolsClient.INJECTOR.getInstance(AirPlaceReachFeature.class);
