@@ -52,7 +52,11 @@ public class MacroListWidget extends AlwaysSelectedEntryListWidget<MacroEntry> {
         parent.renderBackground(matrices);
     }
 
-    protected boolean isFocused() {
+    //#if MC>=11904
+    public boolean isFocused() {
+    //#else
+    //$$ protected boolean isFocused() {
+    //#endif
         return parent.getFocused() == this;
     }
 

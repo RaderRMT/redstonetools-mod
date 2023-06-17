@@ -176,13 +176,23 @@ public class MacroEditScreen extends GameOptionsScreen {
             mouseY = -1;
         }
 
-        this.renderBackgroundTexture(0);
+        //#if MC>=11904
+        this.renderBackgroundTexture(matrices);
+        //#else
+        //$$ this.renderBackgroundTexture(0);
+        //#endif
+
         commandList.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
 
-        drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+        //#if MC>=11904
+        drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+        drawCenteredTextWithShadow(matrices, this.textRenderer, "Key Bind", width / 2 - (99 - textRenderer.getWidth("Key Bind") / 2), 55 + textRenderer.fontHeight / 2, 16777215);
+        //#else
+        //$$ drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+        //$$ drawCenteredText(matrices, this.textRenderer, "Key Bind", width / 2 - (99 - textRenderer.getWidth("Key Bind") / 2), 55 + textRenderer.fontHeight / 2, 16777215);
+        //#endif
 
-        drawCenteredText(matrices, this.textRenderer, "Key Bind", width / 2 - (99 - textRenderer.getWidth("Key Bind") / 2), 55 + textRenderer.fontHeight / 2, 16777215);
         nameField.render(matrices, mouseX, mouseY, delta);
 
         if (nameField.getText().isEmpty() && !nameField.isFocused()) {

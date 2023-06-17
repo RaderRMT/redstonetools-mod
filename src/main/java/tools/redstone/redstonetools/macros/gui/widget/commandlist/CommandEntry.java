@@ -67,13 +67,21 @@ public class CommandEntry extends EntryListWidget.Entry<CommandEntry> {
     }
     private boolean edit = false;
 
+    @Override
     public void setFocused(boolean focused){
-        command.setTextFieldFocused(focused);
+        //#if MC>=11904
+        command.setFocused(focused);
+        //#else
+        //$$ command.setTextFieldFocused(focused);
+        //#endif
         if (focused){
             owner.centerScrollOn(this);
             edit = true;
         }
-        owner.focusOn(this);
+
+        //#if MC<=11903
+        //$$ owner.focusOn(this);
+        //#endif
     }
 
     protected String getText() {

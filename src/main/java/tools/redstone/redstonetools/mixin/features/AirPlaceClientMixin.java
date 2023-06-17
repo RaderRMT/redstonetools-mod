@@ -19,6 +19,10 @@ import tools.redstone.redstonetools.RedstoneToolsClient;
 import tools.redstone.redstonetools.features.commands.AirPlaceReachFeature;
 import tools.redstone.redstonetools.features.toggleable.AirPlaceFeature;
 
+//#if MC>=11904
+import net.minecraft.util.math.Vec3i;
+//#endif
+
 @Mixin(MinecraftClient.class)
 public abstract class AirPlaceClientMixin {
     private final AirPlaceFeature airPlaceFeature = RedstoneToolsClient.INJECTOR.getInstance(AirPlaceFeature.class);
@@ -35,7 +39,12 @@ public abstract class AirPlaceClientMixin {
 
         var hitResult = getAirplaceHitResult();
 
-        crosshairTarget = new BlockHitResult(hitResult, Direction.UP, new BlockPos(hitResult), false);
+        //#if MC>=11904
+        Vec3i position = new Vec3i((int) hitResult.x, (int) hitResult.y, (int) hitResult.z);
+        crosshairTarget = new BlockHitResult(hitResult, Direction.UP, new BlockPos(position), false);
+        //#else
+        //$$ crosshairTarget = new BlockHitResult(hitResult, Direction.UP, new BlockPos(hitResult), false);
+        //#endif
     }
 
     @Inject(method = "doAttack", at = @At(value = "HEAD"), locals = LocalCapture.CAPTURE_FAILHARD)
@@ -44,8 +53,16 @@ public abstract class AirPlaceClientMixin {
             return;
         }
 
-        //Call interactionManager directly because the block is air, with which the player cannot interact
-        getInteractionManager().attackBlock(new BlockPos(getAirplaceHitResult()), Direction.UP);
+        var hitResult = getAirplaceHitResult();
+
+        // Call interactionManager directly because the block is air, with which the player cannot interact
+
+        //#if MC>=11904
+        Vec3i position = new Vec3i((int) hitResult.x, (int) hitResult.y, (int) hitResult.z);
+        getInteractionManager().attackBlock(new BlockPos(position), Direction.UP);
+        //#else
+        //$$ getInteractionManager().attackBlock(new BlockPos(getAirplaceHitResult()), Direction.UP);
+        //#endif
     }
 
     private boolean isAirplaceAllowed() {

@@ -48,12 +48,21 @@ public class MacroSelectScreen extends GameOptionsScreen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackgroundTexture(0);
+        //#if MC>=11904
+        this.renderBackgroundTexture(matrices);
+        //#else
+        //$$ this.renderBackgroundTexture(0);
+        //#endif
+
         macroList.render(matrices, mouseX, mouseY, delta);
 
-        drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
-        super.render(matrices, mouseX, mouseY, delta);
+        //#if MC>=11904
+        drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+        //#else
+        //$$ drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+        //#endif
 
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     public void openEditScreen(MacroEntry entry) {

@@ -40,7 +40,7 @@ public class CommandEditScreen extends GameOptionsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         parent.render(matrices, mouseX, mouseY, delta);
 
-        this.fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
+        fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
 
         commandField.render(matrices, mouseX, mouseY, delta);
 
@@ -68,7 +68,13 @@ public class CommandEditScreen extends GameOptionsScreen {
     @Override
     public void close() {
         super.close();
-        commandField.setTextFieldFocused(false);
+
+        //#if MC>=11904
+        commandField.setFocused(false);
+        //#else
+        //$$ commandField.setTextFieldFocused(false);
+        //#endif
+
         commandField.setChangedListener(null);
         commandMaroCommandSuggestor.setWindowActive(false);
         commandMaroCommandSuggestor.refresh();
@@ -81,7 +87,11 @@ public class CommandEditScreen extends GameOptionsScreen {
             if (!commandMaroCommandSuggestor.mouseClicked(mouseX, mouseY, button)) {
                 close();
             } else {
-                commandField.setTextFieldFocused(true);
+                //#if MC>=11904
+                commandField.setFocused(true);
+                //#else
+                //$$ commandField.setTextFieldFocused(true);
+                //#endif
             }
             return false;
         }
