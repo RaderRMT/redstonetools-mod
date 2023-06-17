@@ -7,10 +7,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+
+//#if MC>=11903
+import net.minecraft.registry.Registries;
+//#else
+//$$ import net.minecraft.util.registry.Registry;
+//#endif
 
 import java.util.Objects;
 
@@ -35,7 +39,11 @@ public final class BlockStateNbtUtil {
         }
 
         NbtCompound root = new NbtCompound();
-        root.putString("Id", Registry.BLOCK.getId(state.getBlock()).toString());
+        //#if MC>=11903
+        root.putString("Id", Registries.BLOCK.getId(state.getBlock()).toString());
+        //#else
+        //$$ root.putString("Id", Registry.BLOCK.getId(state.getBlock()).toString());
+        //#endif
 
         // serialize properties
         if (!state.getProperties().isEmpty()) {
@@ -70,7 +78,11 @@ public final class BlockStateNbtUtil {
         // we use new Identifier(...) here to allow it to throw exceptions
         // instead of getting a cryptic NPE
         Identifier identifier = new Identifier(compound.getString("Id"));
-        Block block = Registry.BLOCK.get(identifier);
+        //#if MC>=11903
+        Block block = Registries.BLOCK.get(identifier);
+        //#else
+        //$$ Block block = Registry.BLOCK.get(identifier);
+        //#endif
 
         // deserialize properties
         BlockState state = block.getDefaultState();

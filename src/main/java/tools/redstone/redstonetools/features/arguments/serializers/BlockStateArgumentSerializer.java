@@ -7,11 +7,18 @@ import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.command.argument.BlockStateArgumentType;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.registry.Registry;
+
+//#if MC>=11903
+import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.registry.Registries;
+//#else
+//$$ import net.minecraft.util.registry.Registry;
+//#endif
 
 //#if MC>=11900
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.util.registry.DynamicRegistryManager;
+//$$ import net.minecraft.command.CommandRegistryAccess;
+//$$ import net.minecraft.util.registry.DynamicRegistryManager;
 //#endif
 
 public class BlockStateArgumentSerializer extends BrigadierSerializer<BlockStateArgument, String> {
@@ -19,8 +26,10 @@ public class BlockStateArgumentSerializer extends BrigadierSerializer<BlockState
     private static final BlockStateArgumentSerializer INSTANCE = new BlockStateArgumentSerializer();
 
     private BlockStateArgumentSerializer() {
-        //#if MC>=11900
-        super(BlockStateArgument.class, BlockStateArgumentType.blockState(new CommandRegistryAccess(DynamicRegistryManager.BUILTIN.get())));
+        //#if MC>=19903
+        super(BlockStateArgument.class, BlockStateArgumentType.blockState(CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup())));
+        //#elseif MC>=11900
+        //$$ super(BlockStateArgument.class, BlockStateArgumentType.blockState(new CommandRegistryAccess(DynamicRegistryManager.BUILTIN.get())));
         //#else
         //$$ super(BlockStateArgument.class, BlockStateArgumentType.blockState());
         //#endif
@@ -44,7 +53,11 @@ public class BlockStateArgumentSerializer extends BrigadierSerializer<BlockState
         BlockState state = value.getBlockState();
         Block block = state.getBlock();
 
-        StringBuilder builder = new StringBuilder().append(Registry.BLOCK.getId(block));
+        //#if MC>=11903
+        StringBuilder builder = new StringBuilder().append(Registries.BLOCK.getId(block));
+        //#else
+        //$$ StringBuilder builder = new StringBuilder().append(Registry.BLOCK.getId(block));
+        //#endif
         if (state.getProperties().size() == 0) {
             return builder.toString();
         }

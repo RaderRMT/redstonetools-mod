@@ -31,6 +31,7 @@ def mappingsVersions = [
 		11900: "1.19+build.4",
 		11901: "1.19.1+build.6",
 		11902: "1.19.2+build.28",
+		11903: "1.19.3+build.5",
 ]
 
 def fabricApiVersions = [
@@ -38,6 +39,7 @@ def fabricApiVersions = [
 		11900: "0.55.0+1.19",
 		11901: "0.58.5+1.19.1",
 		11902: "0.76.0+1.19.2",
+		11903: "0.76.1+1.19.3",
 ]
 
 def worldEditApiVersions = [
@@ -45,6 +47,7 @@ def worldEditApiVersions = [
 		11900: "1.19:7.2.11-beta-01",
 		11901: "1.19.1:7.2.11",
 		11902: "1.19.2:7.2.12",
+		11903: "1.19.3:7.2.13",
 ]
 
 repositories {
@@ -103,8 +106,10 @@ processResources {
 	}
 }
 
-if (mcVersion >= 11900) {
+if (mcVersion >= 11903) {
 	loom.accessWidenerPath = rootProject.file("src/main/resources/redstonetools.accesswidener")
+} else if (mcVersion >= 11900) {
+	loom.accessWidenerPath = rootProject.file("versions/1.19.2/src/main/resources/redstonetools.accesswidener")
 }
 
 loom {
@@ -117,7 +122,7 @@ loom {
 	}
 }
 
-if (project.name == '1.19.2') {
+if (project.name == '1.19.3') {
 	tasks.register('generateJava', Copy) {
 		from "${project.parent.projectDir}/src/template/java"
 		into "${project.parent.buildDir}/generated/java"

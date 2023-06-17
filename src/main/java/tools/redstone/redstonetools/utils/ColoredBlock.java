@@ -2,8 +2,13 @@ package tools.redstone.redstonetools.utils;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
+
+//#if MC>=11903
+import net.minecraft.registry.Registries;
+//#else
+//$$ import net.minecraft.util.registry.Registry;
+//#endif
 
 import java.util.HashMap;
 import java.util.regex.Pattern;
@@ -59,7 +64,11 @@ public class ColoredBlock {
     }
 
     public static ColoredBlock fromBlock(@NotNull Block block) {
-        var blockId = Registry.BLOCK.getId(block).toString();
+        //#if MC>=11903
+        var blockId = Registries.BLOCK.getId(block).toString();
+        //#else
+        //$$ var blockId = Registry.BLOCK.getId(block).toString();
+        //#endif
         if (COLORED_BLOCK_CACHE.containsKey(blockId)) {
             return COLORED_BLOCK_CACHE.get(blockId);
         }
@@ -75,7 +84,11 @@ public class ColoredBlock {
     }
 
     public Block toBlock() {
-        return Registry.BLOCK.get(Identifier.tryParse(toBlockId()));
+        //#if MC>=11903
+        return Registries.BLOCK.get(Identifier.tryParse(toBlockId()));
+        //#else
+        //$$ return Registry.BLOCK.get(Identifier.tryParse(toBlockId()));
+        //#endif
     }
 
     @Override

@@ -13,14 +13,14 @@ public class IconButtonWidget extends ButtonWidget {
     public static Identifier PENCIL_ICON = new Identifier("redstonetools","gui/pencil.png");
 
     private final Identifier texture;
-    public IconButtonWidget(Identifier texture ,int x, int y, int width, int height, Text message, PressAction onPress) {
+
+    public IconButtonWidget(Identifier texture, int x, int y, int width, int height, Text message, PressAction onPress) {
         super(x, y, width, height, message, onPress);
         this.texture = texture;
     }
 
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.renderButton(matrices, mouseX, mouseY, delta);
-
 
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.enableDepthTest();
@@ -29,7 +29,7 @@ public class IconButtonWidget extends ButtonWidget {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        drawTexture(matrices, this.x, this.y, 0,0, 20, this.height, 20, 20);
-    }
 
+        drawTexture(matrices, this.x, this.y, 0, 0, 20, this.height, 20, 20);
+    }
 }

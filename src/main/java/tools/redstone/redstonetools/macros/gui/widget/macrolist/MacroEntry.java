@@ -1,7 +1,7 @@
 package tools.redstone.redstonetools.macros.gui.widget.macrolist;
 
 import tools.redstone.redstonetools.macros.Macro;
-import tools.redstone.redstonetools.macros.gui.widget.IconButtonWidget;
+import tools.redstone.redstonetools.macros.gui.widget.IconButton;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -28,13 +28,13 @@ public class MacroEntry extends AlwaysSelectedEntryListWidget.Entry<MacroEntry>{
 
         buttonWidget = new CheckboxWidget(0, 0, 20, 20, null, macro.enabled, false);
 
-        deleteButton = new IconButtonWidget(IconButtonWidget.CROSS_ICON, 0, 0, 20, 20, Text.of(""), (button) -> {
-            deleteIfConfirmed();
-        });
+        deleteButton = IconButton.create(IconButton.CROSS_ICON, (button) -> deleteIfConfirmed())
+                .size(20, 20)
+                .build();
 
-        editButton = new IconButtonWidget(IconButtonWidget.PENCIL_ICON, 0, 0, 20, 20, Text.of(""), (button) -> {
-            owner.parent.openEditScreen(this);
-        });
+        editButton = IconButton.create(IconButton.PENCIL_ICON, (button) -> owner.parent.openEditScreen(this))
+                .size(20, 20)
+                .build();
     }
 
     public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
@@ -56,8 +56,13 @@ public class MacroEntry extends AlwaysSelectedEntryListWidget.Entry<MacroEntry>{
     }
 
     private void renderWidget(PressableWidget widget, MatrixStack matrices, int mouseX, int mouseY, float tickDelta, int x, int y) {
-        widget.x = x;
-        widget.y = y;
+        //#if MC>=11903
+        widget.setX(x);
+        widget.setY(y);
+        //#else
+        //$$ widget.x = x;
+        //$$ widget.y = y;
+        //#endif
         widget.render(matrices, mouseX, mouseY, tickDelta);
     }
 

@@ -21,7 +21,15 @@ public class CommandEditScreen extends GameOptionsScreen {
         super(parent, gameOptions, Text.of(""));
         this.commandField = commandField;
         client = MinecraftClient.getInstance();
-        this.commandMaroCommandSuggestor = new MaroCommandSuggestor(client, parent, commandField,client.textRenderer,true,false, commandField.y -20,5,-805306368);
+
+        int commandFieldY;
+        //#if MC>=11903
+        commandFieldY = commandField.getY();
+        //#else
+        //$$ commandFieldY = commandField.y;
+        //#endif
+
+        this.commandMaroCommandSuggestor = new MaroCommandSuggestor(client, parent, commandField,client.textRenderer,true,false, commandFieldY -20,5,-805306368);
 
         commandField.setChangedListener((s) -> changed = true);
         commandMaroCommandSuggestor.setWindowActive(true);

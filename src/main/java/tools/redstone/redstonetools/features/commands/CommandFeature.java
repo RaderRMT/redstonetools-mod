@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import tools.redstone.redstonetools.features.AbstractFeature;
 import tools.redstone.redstonetools.features.Feature;
 import tools.redstone.redstonetools.features.arguments.Argument;
@@ -54,8 +55,10 @@ public abstract class CommandFeature extends AbstractFeature {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.wasPressed()) {
                 assert client.player != null;
-                //#if MC>=11900
-                client.player.sendCommand(info.command());
+                //#if MC>=11903
+                client.player.networkHandler.sendCommand(info.command());
+                //#elseif MC>=11900
+                //$$ client.player.sendCommand(info.command());
                 //#else
                 //$$ client.player.sendChatMessage("/" + info.command());
                 //#endif

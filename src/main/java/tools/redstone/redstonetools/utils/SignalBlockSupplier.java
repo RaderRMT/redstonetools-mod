@@ -10,7 +10,12 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
+
+//#if MC>=11903
+import net.minecraft.registry.Registries;
+//#else
+//$$ import net.minecraft.util.registry.Registry;
+//#endif
 
 //#if MC>=11900
 import net.minecraft.text.Text;
@@ -43,7 +48,11 @@ public interface SignalBlockSupplier {
             int itemsNeeded = Math.max(0, signalStrength == 1
                     ? 1
                     : (int) Math.ceil(slots * (signalStrength - 1) / 14D * item.getMaxCount()));
-            String itemId = Registry.ITEM.getId(item).toString();
+            //#if MC>=11903
+            String itemId = Registries.ITEM.getId(item).toString();
+            //#else
+            //$$ String itemId = Registry.ITEM.getId(item).toString();
+            //#endif
 
             // Check that the calculated number of items is correct.
             // This is to prevent problems with items that have a maximum stack size of 1 but stackSize > 1.

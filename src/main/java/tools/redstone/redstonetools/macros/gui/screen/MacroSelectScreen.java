@@ -2,6 +2,7 @@ package tools.redstone.redstonetools.macros.gui.screen;
 
 import tools.redstone.redstonetools.macros.gui.widget.macrolist.MacroEntry;
 import tools.redstone.redstonetools.macros.gui.widget.macrolist.MacroListWidget;
+import tools.redstone.redstonetools.widgets.Button;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -31,13 +32,18 @@ public class MacroSelectScreen extends GameOptionsScreen {
         this.macroList = new MacroListWidget(this, client);
         this.addSelectableChild(this.macroList);
 
-        this.addDrawableChild(new ButtonWidget(this.width / 2 +1, this.height - 29, 150, 20, Text.of("Create New..."), (button) -> {
-            this.client.setScreen(new MacroEditScreen(this, gameOptions, Text.of("New Macro"), macroList));
-        }));
+        ButtonWidget newMacroButton = Button.create("Create New...", (button) -> this.client.setScreen(new MacroEditScreen(this, gameOptions, Text.of("New Macro"), macroList)))
+                .position(this.width / 2 + 1, this.height - 29)
+                .size(150, 20)
+                .build();
 
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 151, this.height - 29, 150, 20, ScreenTexts.DONE, (button) -> {
-            this.client.setScreen(this.parent);
-        }));
+        ButtonWidget doneButton = Button.create(ScreenTexts.DONE, (button) -> this.client.setScreen(this.parent))
+                .position(this.width / 2 - 151, this.height - 29)
+                .size(150, 20)
+                .build();
+
+        addDrawableChild(newMacroButton);
+        addDrawableChild(doneButton);
     }
 
     @Override

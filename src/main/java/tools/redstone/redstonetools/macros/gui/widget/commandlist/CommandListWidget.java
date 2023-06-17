@@ -35,20 +35,23 @@ public class CommandListWidget extends EntryListWidget<CommandEntry> {
         return entry;
     }
 
-    protected void addCommandFromPlaceHolder(String command,CommandEntryPlaceHolder placeHolder) {
+    protected void addCommandFromPlaceHolder(String command, CommandEntryPlaceHolder placeHolder) {
         CommandEntry entry = addCommand(command);
         placeHolder.setFocused(false);
 
-        entry.command.x = placeHolder.command.x;
-        entry.command.y = placeHolder.command.y;
+        //#if MC>=11903
+        entry.command.setX(placeHolder.command.getX());
+        entry.command.setY(placeHolder.command.getY());
+        //#else
+        //$$ entry.command.x = placeHolder.command.x;
+        //$$ entry.command.y = placeHolder.command.y;
+        //#endif
         entry.setFocused(true);
     }
 
     public void centerScrollOn(CommandEntry entry) {
         super.centerScrollOn(entry);
     }
-
-
 
     protected void removeCommand(CommandEntry command) {
         removeEntry(command);
