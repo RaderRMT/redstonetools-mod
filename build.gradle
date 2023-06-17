@@ -30,18 +30,21 @@ def mappingsVersions = [
 		11802: "1.18.2+build.4",
 		11900: "1.19+build.4",
 		11901: "1.19.1+build.6",
+		11902: "1.19.2+build.28",
 ]
 
 def fabricApiVersions = [
 		11802: "0.53.4+1.18.2",
 		11900: "0.55.0+1.19",
 		11901: "0.58.5+1.19.1",
+		11902: "0.76.0+1.19.2",
 ]
 
 def worldEditApiVersions = [
 		11802: "1.18.2:7.2.10",
 		11900: "1.19:7.2.11-beta-01",
 		11901: "1.19.1:7.2.11",
+		11902: "1.19.2:7.2.12",
 ]
 
 repositories {
@@ -114,7 +117,7 @@ loom {
 	}
 }
 
-if (project.name == '1.19.1') {
+if (project.name == '1.19.2') {
 	tasks.register('generateJava', Copy) {
 		from "${project.parent.projectDir}/src/template/java"
 		into "${project.parent.buildDir}/generated/java"
