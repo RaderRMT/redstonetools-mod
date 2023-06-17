@@ -16,7 +16,7 @@ import net.minecraft.registry.Registries;
 //$$ import net.minecraft.util.registry.Registry;
 //#endif
 
-//#if MC>=11900
+//#if MC>=11900 && MC<=11902
 //$$ import net.minecraft.command.CommandRegistryAccess;
 //$$ import net.minecraft.util.registry.DynamicRegistryManager;
 //#endif
@@ -26,7 +26,7 @@ public class BlockStateArgumentSerializer extends BrigadierSerializer<BlockState
     private static final BlockStateArgumentSerializer INSTANCE = new BlockStateArgumentSerializer();
 
     private BlockStateArgumentSerializer() {
-        //#if MC>=19903
+        //#if MC>=11903
         super(BlockStateArgument.class, BlockStateArgumentType.blockState(CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup())));
         //#elseif MC>=11900
         //$$ super(BlockStateArgument.class, BlockStateArgumentType.blockState(new CommandRegistryAccess(DynamicRegistryManager.BUILTIN.get())));

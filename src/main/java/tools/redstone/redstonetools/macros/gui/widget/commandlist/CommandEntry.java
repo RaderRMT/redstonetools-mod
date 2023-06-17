@@ -67,7 +67,6 @@ public class CommandEntry extends EntryListWidget.Entry<CommandEntry> {
     }
     private boolean edit = false;
 
-    @Override
     public void setFocused(boolean focused){
         //#if MC>=11904
         command.setFocused(focused);
