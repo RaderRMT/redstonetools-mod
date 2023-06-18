@@ -1,10 +1,12 @@
-package tools.redstone.redstonetools.widgets;
+package tools.redstone.redstonetools.abstraction.widgets;
 
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class Button extends ButtonWidget {
+
+    private final PressAction onPress;
 
     protected Button(
             int x, int y,
@@ -16,11 +18,13 @@ public class Button extends ButtonWidget {
                 x, y,
                 width, height,
                 message,
-                onPress
+                null
                 //#if MC>=11903
                 , DEFAULT_NARRATION_SUPPLIER
                 //#endif
         );
+
+        this.onPress = onPress;
     }
 
     protected Button(Button button) {
@@ -80,6 +84,11 @@ public class Button extends ButtonWidget {
         //#endif
     }
 
+    @Override
+    public final void onPress() {
+        this.onPress.onPress(this);
+    }
+
     public static ButtonBuilder create(String text, PressAction onPress) {
         return create(Text.of(text), onPress);
     }
@@ -129,5 +138,9 @@ public class Button extends ButtonWidget {
                     this.onPress
             );
         }
+    }
+
+    public interface PressAction {
+        void onPress(Button button);
     }
 }

@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import tools.redstone.redstonetools.widgets.Button;
+import tools.redstone.redstonetools.abstraction.widgets.Button;
 
 public class IconButton extends Button {
 

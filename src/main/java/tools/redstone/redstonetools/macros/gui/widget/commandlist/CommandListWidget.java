@@ -39,13 +39,9 @@ public class CommandListWidget extends EntryListWidget<CommandEntry> {
         CommandEntry entry = addCommand(command);
         placeHolder.setFocused(false);
 
-        //#if MC>=11903
         entry.command.setX(placeHolder.command.getX());
         entry.command.setY(placeHolder.command.getY());
-        //#else
-        //$$ entry.command.x = placeHolder.command.x;
-        //$$ entry.command.y = placeHolder.command.y;
-        //#endif
+
         entry.setFocused(true);
     }
 

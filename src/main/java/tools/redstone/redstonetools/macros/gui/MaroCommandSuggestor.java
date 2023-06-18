@@ -2,11 +2,13 @@ package tools.redstone.redstonetools.macros.gui;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 
 //#if MC>=11901
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
+import net.minecraft.client.util.math.MatrixStack;
 //#else
 //$$ import net.minecraft.client.gui.screen.CommandSuggestor;
 //#endif
@@ -14,7 +16,7 @@ import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import java.util.HashMap;
 
 //#if MC>=11901
-public class MaroCommandSuggestor extends ChatInputSuggestor {
+public class MaroCommandSuggestor extends ChatInputSuggestor implements Drawable {
 //#else
 //$$ public class MaroCommandSuggestor extends CommandSuggestor {
 //#endif
@@ -46,5 +48,10 @@ public class MaroCommandSuggestor extends ChatInputSuggestor {
         }
 
         super.refresh();
+    }
+
+    @Override
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        super.render(matrices, mouseX, mouseY);
     }
 }

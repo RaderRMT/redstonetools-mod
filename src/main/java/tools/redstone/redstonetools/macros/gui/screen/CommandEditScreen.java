@@ -1,57 +1,46 @@
 package tools.redstone.redstonetools.macros.gui.screen;
 
+import tools.redstone.redstonetools.abstraction.GuiScreen;
+import tools.redstone.redstonetools.abstraction.widgets.TextField;
 import tools.redstone.redstonetools.macros.gui.MaroCommandSuggestor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 
+public class CommandEditScreen extends GuiScreen {
 
-public class CommandEditScreen extends GameOptionsScreen {
-
-    private final TextFieldWidget commandField;
+    private final TextField commandField;
     private final MaroCommandSuggestor commandMaroCommandSuggestor;
     private boolean changed = false;
 
-    public CommandEditScreen(Screen parent, GameOptions gameOptions, TextFieldWidget commandField) {
-        super(parent, gameOptions, Text.of(""));
+    public CommandEditScreen(Screen parent, TextField commandField) {
+        super(parent, "");
+
         this.commandField = commandField;
-        client = MinecraftClient.getInstance();
+        this.client = MinecraftClient.getInstance();
 
-        int commandFieldY;
-        //#if MC>=11903
-        commandFieldY = commandField.getY();
-        //#else
-        //$$ commandFieldY = commandField.y;
-        //#endif
+        int commandFieldY = commandField.getY();
 
-        this.commandMaroCommandSuggestor = new MaroCommandSuggestor(client, parent, commandField,client.textRenderer,true,false, commandFieldY -20,5,-805306368);
+        this.commandMaroCommandSuggestor = new MaroCommandSuggestor(this.client, parent, commandField, this.client.textRenderer, true, false, commandFieldY - 20, 5, -805306368);
 
-        commandField.setChangedListener((s) -> changed = true);
-        commandMaroCommandSuggestor.setWindowActive(true);
-        commandMaroCommandSuggestor.refresh();
+        commandField.setChangedListener((s) -> this.changed = true);
+        this.commandMaroCommandSuggestor.setWindowActive(true);
+        this.commandMaroCommandSuggestor.refresh();
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        parent.render(matrices, mouseX, mouseY, delta);
+    protected void render(int mouseX, int mouseY, float delta) {
+        renderDrawable(getParent());
 
-        fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
+        renderGradientOverScreen(-1072689136, -804253680);
 
-        commandField.render(matrices, mouseX, mouseY, delta);
+        renderDrawable(this.commandField);
+        renderDrawable(this.commandMaroCommandSuggestor);
 
-        commandMaroCommandSuggestor.render(matrices, mouseX, mouseY);
-        if (changed) {
-            commandMaroCommandSuggestor.refresh();
-            changed = false;
+        if (this.changed) {
+            this.commandMaroCommandSuggestor.refresh();
+            this.changed = false;
         }
-
-        super.render(matrices, mouseX, mouseY, delta);
-
     }
 
     @Override
@@ -62,23 +51,19 @@ public class CommandEditScreen extends GameOptionsScreen {
 
     @Override
     public void resize(MinecraftClient client, int width, int height) {
-        parent.resize(client,width,height);
+        getParent().resize(client, width, height);
     }
 
     @Override
     public void close() {
+        this.commandField.setFocused(false);
+        this.commandField.setChangedListener(null);
+
+        this.commandMaroCommandSuggestor.setWindowActive(false);
+        this.commandMaroCommandSuggestor.refresh();
+        this.commandMaroCommandSuggestor.close();
+
         super.close();
-
-        //#if MC>=11904
-        commandField.setFocused(false);
-        //#else
-        //$$ commandField.setTextFieldFocused(false);
-        //#endif
-
-        commandField.setChangedListener(null);
-        commandMaroCommandSuggestor.setWindowActive(false);
-        commandMaroCommandSuggestor.refresh();
-        commandMaroCommandSuggestor.close();
     }
 
     @Override
@@ -87,11 +72,7 @@ public class CommandEditScreen extends GameOptionsScreen {
             if (!commandMaroCommandSuggestor.mouseClicked(mouseX, mouseY, button)) {
                 close();
             } else {
-                //#if MC>=11904
-                commandField.setFocused(true);
-                //#else
-                //$$ commandField.setTextFieldFocused(true);
-                //#endif
+                this.commandField.setFocused(true);
             }
             return false;
         }

@@ -1,6 +1,8 @@
 package tools.redstone.redstonetools.macros.gui.screen;
 
 import net.minecraft.client.gui.screen.ConfirmScreen;
+import tools.redstone.redstonetools.abstraction.GuiScreen;
+import tools.redstone.redstonetools.abstraction.widgets.TextField;
 import tools.redstone.redstonetools.macros.Macro;
 import tools.redstone.redstonetools.macros.MacroManager;
 import tools.redstone.redstonetools.macros.actions.Action;
@@ -10,18 +12,13 @@ import tools.redstone.redstonetools.macros.gui.widget.commandlist.CommandListWid
 import tools.redstone.redstonetools.macros.gui.widget.macrolist.MacroListWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.InputUtil.Key;
 import net.minecraft.client.util.InputUtil.Type;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import tools.redstone.redstonetools.utils.KeyBindingUtils;
-import tools.redstone.redstonetools.widgets.Button;
+import tools.redstone.redstonetools.abstraction.widgets.Button;
 
 import java.util.List;
 
@@ -34,36 +31,34 @@ import net.minecraft.screen.ScreenTexts;
 
 import static tools.redstone.redstonetools.RedstoneToolsClient.INJECTOR;
 
-public class MacroEditScreen extends GameOptionsScreen {
+public class MacroEditScreen extends GuiScreen {
 
     private final MacroListWidget macroListWidget;
     private final Macro macro;
 
     private CommandListWidget commandList;
-    private TextFieldWidget nameField;
-    private ButtonWidget doneButton;
-    private ButtonWidget keyBindButton;
+    private TextField nameField;
+    private Button doneButton;
+    private Button keyBindButton;
 
     private boolean overlapped = false;
     private boolean detectingKeycodeKey = false;
 
-    public MacroEditScreen(Screen parent, GameOptions gameOptions, Text title, MacroListWidget macroListWidget) {
-        super(parent, gameOptions, title);
-        this.macroListWidget = macroListWidget;
-        this.macro = Macro.buildEmpty();
+    public MacroEditScreen(Screen parent, Text title, MacroListWidget macroListWidget) {
+        this(parent, title, macroListWidget, Macro.buildEmpty());
     }
 
-    public MacroEditScreen(Screen parent, GameOptions gameOptions, Text title, MacroListWidget macroListWidget, Macro macro) {
-        super(parent, gameOptions, title);
+    public MacroEditScreen(Screen parent, Text title, MacroListWidget macroListWidget, Macro macro) {
+        super(parent, title);
+
         this.macroListWidget = macroListWidget;
         this.macro = macro.createCopy();
     }
 
     @Override
     public void init() {
-        super.init();
         overlapped = false;
-        nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, Text.of(""));
+        nameField = new TextField(this.width / 2 - 100, 22, 200, 20, Text.of(""));
         nameField.setText(macro.name.trim());
 
         doneButton = Button.create("Done", this::onDoneButtonPressed)
@@ -80,7 +75,7 @@ public class MacroEditScreen extends GameOptionsScreen {
         });
         addSelectableChild(nameField);
 
-        ButtonWidget cancelButton = Button.create(ScreenTexts.CANCEL, (button) -> close())
+        Button cancelButton = Button.create(ScreenTexts.CANCEL, (button) -> close())
                 .position(this.width / 2 + 2, this.height / 4 + 144 + 5)
                 .size(98, 20)
                 .build();
@@ -139,7 +134,7 @@ public class MacroEditScreen extends GameOptionsScreen {
         this.addSelectableChild(commandList);
     }
 
-    private void onDoneButtonPressed(ButtonWidget buttonWidget) {
+    private void onDoneButtonPressed(Button button) {
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
             return;
@@ -155,13 +150,12 @@ public class MacroEditScreen extends GameOptionsScreen {
 
         INJECTOR.getInstance(MacroManager.class).saveChanges();
 
-        client.setScreen(parent);
+        client.setScreen(getParent());
     }
 
-    private void onKeyBindButtonPressed(ButtonWidget buttonWidget) {
+    private void onKeyBindButtonPressed(Button button) {
         detectingKeycodeKey = true;
 
-        Button button = (Button) buttonWidget;
         button.setText("> " + button.getText() + " <", Formatting.YELLOW);
     }
 
@@ -170,30 +164,20 @@ public class MacroEditScreen extends GameOptionsScreen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    protected void render(int mouseX, int mouseY, float delta) {
         if (overlapped) {
-            mouseX = -1;
-            mouseY = -1;
+            setMouseX(-1);
+            setMouseY(-1);
         }
 
-        //#if MC>=11904
-        this.renderBackgroundTexture(matrices);
-        //#else
-        //$$ this.renderBackgroundTexture(0);
-        //#endif
+        renderBackground();
 
-        commandList.render(matrices, mouseX, mouseY, delta);
-        super.render(matrices, mouseX, mouseY, delta);
+        renderDrawable(this.commandList);
 
-        //#if MC>=11904
-        drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
-        drawCenteredTextWithShadow(matrices, this.textRenderer, "Key Bind", width / 2 - (99 - textRenderer.getWidth("Key Bind") / 2), 55 + textRenderer.fontHeight / 2, 16777215);
-        //#else
-        //$$ drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
-        //$$ drawCenteredText(matrices, this.textRenderer, "Key Bind", width / 2 - (99 - textRenderer.getWidth("Key Bind") / 2), 55 + textRenderer.fontHeight / 2, 16777215);
-        //#endif
+        drawCenteredText(this.title, this.width / 2, 8, 16777215);
+        drawCenteredText("Key Bind", width / 2 - (99 - textRenderer.getWidth("Key Bind") / 2), 55 + textRenderer.fontHeight / 2, 16777215);
 
-        nameField.render(matrices, mouseX, mouseY, delta);
+        renderDrawable(this.nameField);
 
         if (nameField.getText().isEmpty() && !nameField.isFocused()) {
             nameField.setSuggestion("Name");
@@ -214,7 +198,7 @@ public class MacroEditScreen extends GameOptionsScreen {
     public void resize(MinecraftClient client, int width, int height) {
         super.resize(client, width, height);
         if (overlapped) {
-            client.setScreen(new CommandEditScreen(this, gameOptions, commandList.getFocused().command));
+            client.setScreen(new CommandEditScreen(this, commandList.getFocused().command));
         }
     }
 
@@ -229,7 +213,7 @@ public class MacroEditScreen extends GameOptionsScreen {
         if (macro.needsSaving()) {
             client.setScreen(new ConfirmScreen(accept -> {
                 if (accept) {
-                    client.setScreen(parent);
+                    client.setScreen(getParent());
                 } else {
                     client.setScreen(this);
                 }
@@ -247,8 +231,8 @@ public class MacroEditScreen extends GameOptionsScreen {
         }
     }
 
-    public void editCommandField(TextFieldWidget commandField) {
-        client.setScreen(new CommandEditScreen(this, gameOptions, commandField));
+    public void editCommandField(TextField commandField) {
+        client.setScreen(new CommandEditScreen(this, commandField));
         overlapped = true;
     }
 
