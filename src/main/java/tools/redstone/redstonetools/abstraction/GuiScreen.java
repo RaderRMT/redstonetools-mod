@@ -39,7 +39,9 @@ public abstract class GuiScreen extends Screen {
         set(matrices, mouseX, mouseY, delta);
 
         render(getMouseX(), getMouseY(), getDelta());
+    }
 
+    protected void renderSuper() {
         super.render(getMatrices(), getMouseX(), getMouseY(), getDelta());
     }
 

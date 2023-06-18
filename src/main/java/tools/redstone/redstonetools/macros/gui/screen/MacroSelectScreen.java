@@ -48,6 +48,8 @@ public class MacroSelectScreen extends GuiScreen {
         renderDrawable(this.macroList);
 
         drawCenteredText(this.title, this.width / 2, 8, 16777215);
+
+        renderSuper();
     }
 
     public void openEditScreen(MacroEntry entry) {

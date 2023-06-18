@@ -41,6 +41,8 @@ public class CommandEditScreen extends GuiScreen {
             this.commandMaroCommandSuggestor.refresh();
             this.changed = false;
         }
+
+        renderSuper();
     }
 
     @Override

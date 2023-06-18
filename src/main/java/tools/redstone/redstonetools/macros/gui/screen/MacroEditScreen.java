@@ -174,6 +174,8 @@ public class MacroEditScreen extends GuiScreen {
 
         renderDrawable(this.commandList);
 
+        renderSuper();
+
         drawCenteredText(this.title, this.width / 2, 8, 16777215);
         drawCenteredText("Key Bind", width / 2 - (99 - textRenderer.getWidth("Key Bind") / 2), 55 + textRenderer.fontHeight / 2, 16777215);
 
