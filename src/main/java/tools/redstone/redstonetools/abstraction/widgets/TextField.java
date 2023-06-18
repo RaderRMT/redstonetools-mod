@@ -52,10 +52,6 @@ public class TextField extends TextFieldWidget {
     }
 
     public void setFocused(boolean focused) {
-        //#if MC>=11904
         super.setFocused(focused);
-        //#else
-        //$$ super.setTextFieldFocused(focused);
-        //#endif
     }
 }

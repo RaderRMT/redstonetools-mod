@@ -5,10 +5,10 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.math.MatrixStack;
 
 //#if MC>=11901
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
-import net.minecraft.client.util.math.MatrixStack;
 //#else
 //$$ import net.minecraft.client.gui.screen.CommandSuggestor;
 //#endif
@@ -18,7 +18,7 @@ import java.util.HashMap;
 //#if MC>=11901
 public class MaroCommandSuggestor extends ChatInputSuggestor implements Drawable {
 //#else
-//$$ public class MaroCommandSuggestor extends CommandSuggestor {
+//$$ public class MaroCommandSuggestor extends CommandSuggestor implements Drawable {
 //#endif
 
     private static final HashMap<MaroCommandSuggestor,Integer> yMap =  new HashMap<>();
