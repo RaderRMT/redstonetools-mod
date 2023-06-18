@@ -93,8 +93,6 @@ dependencies {
 
 	// Worldedit API
 	modImplementation("com.sk89q.worldedit:worldedit-fabric-mc${worldEditApiVersions[mcVersion]}")
-
-	modRuntimeOnly('me.djtheredstoner:DevAuth-fabric:1.1.0')
 }
 
 processResources {
@@ -118,8 +116,6 @@ if (mcVersion >= 11903) {
 loom {
 	runs {
 		client {
-			property('devauth.enabled', 'true')
-
 			ideConfigGenerated = true
 		}
 	}

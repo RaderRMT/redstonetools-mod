@@ -12,13 +12,6 @@ subprojects {
         maven("https://github.com/jitsi/jitsi-maven-repository/raw/master/releases/")
         maven("https://maven.fabricmc.net/")
         maven("https://jitpack.io")
-
-        maven {
-            url = uri("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
-            content {
-                includeGroup("me.djtheredstoner")
-            }
-        }
     }
 }
 
